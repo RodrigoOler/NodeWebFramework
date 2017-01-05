@@ -25,7 +25,6 @@ http.createServer(function(req, res){
 					}
 				});
 			}
-			console.log("Vai entrar em!");
 			//Chamada do Controller passando os parametros
 			var append_controller = require("./Controllers/"+controller+".js");
 			res.write(append_controller[func]());
