@@ -1,15 +1,6 @@
-// module.exportss = {
-// 	index: function(){
-// 		return "Funciona !";
-// 	},
-// 	index2:function(){
-// 		return "Index2";
-// 	},
-// 	index3:function(){
-// 		return "Index3";
-// 	}
-//
-// }
-exports.index = function(){
+exports.index = function(sobrenome,id){
 	return "Index";
+};
+exports.teste_post = function(){
+	return "Formulario enviado com sucesso";
 };
