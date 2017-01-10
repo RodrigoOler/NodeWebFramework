@@ -23,7 +23,6 @@ http.createServer(function(req, res){
 	}catch(error){
 		console.log(error);
 	}
-	res.end();
 }).listen(3000);
 
 function methodGet(req,res){
@@ -44,19 +43,21 @@ function methodGet(req,res){
 		});
 	}
 	//Chamada do Controller passando os parametros
-	if((func == undefined) || (func == ""))
-		func = "index";
-	if((controller == undefined) || (controller == ""))
-		controller = "index";
+	controller = default_controller(controller);
+	func = default_controller(func);
 	if (!fileSys.existsSync("./Controllers/"+controller+".js")){
 		res.write("404 Not found!");
 		throw("Pagina não encontrada");
 	}
 	var append_controller = require("./Controllers/"+controller+".js");
-	if (append_controller[func] == undefined)
+	if (append_controller[func] == undefined){
 		res.write("404 Not found!");
-	else
-		res.write(append_controller[func]());
+		res.end();
+	}
+	else{
+		res.write(append_controller[func](request_vars));
+		res.end();
+	}
 }
 
 function methodPost(req, res){
@@ -64,9 +65,33 @@ function methodPost(req, res){
 	var corpo_msg = "";
 	req.on('data',function(chunk){
 		corpo_msg += chunk;
+		var request_vars = queryString.parse(corpo_msg);
+		var url = req['url'].replace(/\s\n/g, '').split('/');
+		var controller = url[1];
+		var func = url[2];
+		//Montagem do Controller/Function
+		controller = default_controller(controller);
+		func = default_controller(func);
+		var append_controller = require("./Controllers/"+controller+".js");
+		console.log(append_controller);
+		if (append_controller[func] == undefined){
+			res.write("404 Not found!");
+			res.end();
+		}
+		else{
+			res.write(append_controller[func]());
+			res.end();
+			}
 	});
-	req.on('end',function(){
-		var data = queryString.parse(corpo_msg);
-		console.log(data);
-	});
+}
+
+function default_func(func,controller){
+	if((func == undefined) || (func == ""))
+		func = "index";
+	return func;
+}
+function default_controller(controller){
+	if((controller == undefined) || (controller == ""))
+		controller = "index";
+	return controller;
 }
