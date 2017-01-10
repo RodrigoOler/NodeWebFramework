@@ -1,7 +1,6 @@
 var http = require('http');
 var queryString = require('querystring');
 var fileSys = require('fs');
-//var Controller = require("./Controllers.js")
 http.createServer(function(req, res){
 	try{
 		res.setHeader('Access-Controll-Allow-Origin','*');
@@ -22,6 +21,8 @@ http.createServer(function(req, res){
 		}
 	}catch(error){
 		console.log(error);
+		res.write(error);
+		res.end();
 	}
 }).listen(3000);
 
@@ -90,6 +91,7 @@ function default_func(func,controller){
 		func = "index";
 	return func;
 }
+
 function default_controller(controller){
 	if((controller == undefined) || (controller == ""))
 		controller = "index";
