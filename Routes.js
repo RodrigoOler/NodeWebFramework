@@ -1,5 +1,6 @@
 var http = require('http');
 var queryString = require('querystring');
+var helpers = require('./includes/Helpers.js');
 var fileSys = require('fs');
 http.createServer(function(req, res){
 	try{
@@ -46,19 +47,7 @@ function methodGet(req,res){
 	//Chamada do Controller passando os parametros
 	controller = default_controller(controller);
 	func = default_controller(func);
-	if (!fileSys.existsSync("./Controllers/"+controller+".js")){
-		res.write("404 Not found!");
-		throw("Pagina não encontrada");
-	}
-	var append_controller = require("./Controllers/"+controller+".js");
-	if (append_controller[func] == undefined){
-		res.write("404 Not found!");
-		res.end();
-	}
-	else{
-		res.write(append_controller[func](request_vars));
-		res.end();
-	}
+	helpers.callController(controller,func,request_vars);
 }
 
 function methodPost(req, res){
@@ -66,6 +55,8 @@ function methodPost(req, res){
 	var corpo_msg = "";
 	req.on('data',function(chunk){
 		corpo_msg += chunk;
+	});
+	req.on('end',function(){
 		var request_vars = queryString.parse(corpo_msg);
 		var url = req['url'].replace(/\s\n/g, '').split('/');
 		var controller = url[1];
@@ -74,7 +65,6 @@ function methodPost(req, res){
 		controller = default_controller(controller);
 		func = default_controller(func);
 		var append_controller = require("./Controllers/"+controller+".js");
-		console.log(append_controller);
 		if (append_controller[func] == undefined){
 			res.write("404 Not found!");
 			res.end();

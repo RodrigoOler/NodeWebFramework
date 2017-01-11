@@ -6,9 +6,18 @@ exports.renderView = function(view_name,vars){
 
 }
 
-//Função que chama um novo controller a partir da rota (talvez não sera necessario. Ver depois)
-exports.callController = function(view_name,vars){
-
+//Função que chama um novo controller a partir da rota
+exports.callController = function(controller,func,vars){
+	if (!fileSys.existsSync("./Controllers/"+controller+".js")){
+		throw("Pagina não encontrada");
+	}
+	var append_controller = require("./Controllers/"+controller+".js");
+	if (append_controller[func] == undefined){
+		throw("Pagina não encontrada");
+	}
+	else{
+		append_controller[func](request_vars);
+	}
 }
 
 //Função que renderiza um texto para JSON
