@@ -1,3 +1,5 @@
+var fileSys = require('fs');
+var path = require('path')
 //Arquivo com helpers usados apenas pelo sistema
 //Funcoes com controle de Controller, chamada de Rota, etc
 
@@ -8,15 +10,19 @@ exports.renderView = function(view_name,vars){
 
 //Função que chama um novo controller a partir da rota
 exports.callController = function(controller,func,vars){
-	if (!fileSys.existsSync("./Controllers/"+controller+".js")){
-		throw("Pagina não encontrada");
+	console.log("Controller : " + path.join(__dirname , "../Controllers/"+controller+".js"));
+	if (!fileSys.existsSync(path.join(__dirname, "../Controllers/"+controller+".js"))){
+		console.log("Não encontrou controller");
+		return "Pagina não encontrada";
 	}
-	var append_controller = require("./Controllers/"+controller+".js");
+	var append_controller = require("../Controllers/"+controller+".js");
 	if (append_controller[func] == undefined){
-		throw("Pagina não encontrada");
+		console.log("Não encontrou funcao");
+		return "Pagina não encontrada";
 	}
 	else{
-		append_controller[func](request_vars);
+		var teste = append_controller[func](vars);
+		return teste;
 	}
 }
 

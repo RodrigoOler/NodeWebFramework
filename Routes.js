@@ -47,7 +47,9 @@ function methodGet(req,res){
 	//Chamada do Controller passando os parametros
 	controller = default_controller(controller);
 	func = default_controller(func);
-	helpers.callController(controller,func,request_vars);
+	var call_controller = helpers.callController(controller,func,request_vars);
+	res.write(call_controller);
+	res.end()
 }
 
 function methodPost(req, res){
@@ -64,15 +66,10 @@ function methodPost(req, res){
 		//Montagem do Controller/Function
 		controller = default_controller(controller);
 		func = default_controller(func);
-		var append_controller = require("./Controllers/"+controller+".js");
-		if (append_controller[func] == undefined){
-			res.write("404 Not found!");
-			res.end();
-		}
-		else{
-			res.write(append_controller[func]());
-			res.end();
-			}
+		var call_controller = helpers.callController(controller,func,request_vars);
+		console.log(call_controller);
+		res.write(call_controller);
+		res.end();
 	});
 }
 
