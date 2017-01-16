@@ -1,7 +1,10 @@
-var http = require('http');
-var helpers = require('./includes/Helpers.js');
-var fileSys = require('fs');
-http.createServer(function(req, res){
+'use strict'
+
+const http = require('http');
+const helpers = require('./includes/Helpers.js');
+const fileSys = require('fs');
+
+http.createServer((req, res) => {
 	try{
 		res.setHeader('Access-Controll-Allow-Origin','*');
 		//Resolvendo o bug do favicon.ico
