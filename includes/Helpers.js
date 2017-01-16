@@ -11,9 +11,7 @@ exports.renderView = function(view_name,vars){
 
 //Função que chama um novo controller a partir da rota
 exports.callController = function(controller,func,vars){
-	console.log("Controller : " + path.join(__dirname , "../Controllers/"+controller+".js"));
 	if (!fileSys.existsSync(path.join(__dirname, "../Controllers/"+controller+".js"))){
-		console.log("Não encontrou controller");
 		return "Pagina não encontrada";
 	}
 	var append_controller = require("../Controllers/"+controller+".js");
@@ -23,25 +21,21 @@ exports.callController = function(controller,func,vars){
 	}
 	else{
 		var retController = append_controller[func](vars);
-
+		var readView = "";
 		var typeReturn = typeof(retController) ;
-		switch (typeReturn){
-			case "object":
-				console.log("e um objeto : " + retController);
-				for(var i = 0; i < retController.length; i++){
-					var current_item = retController[i];
-					switch ("view" in current_item) {
-						case true:
-							//Retorna a view com os parametros
-							break;
-
-						default:
-						//Retorna apenas um texto
-					}
-				}
+		var current_item = retController;
+		switch (current_item["type"]) {
+			case "view":
+				//Retorna a view com os parametros
+				readView = fileSys.readFileSync(path.join(__dirname,'../Views/'  + current_item['path']), 'utf8');
+				console.log(readView);
+				return readView;
+				break;
+			default:
+			//Retorna apenas um texto
+			return readView;
 			break;
 		}
-		return retController;
 	}
 }
 
@@ -49,11 +43,6 @@ exports.callController = function(controller,func,vars){
 exports.renderJSON = function(view_name,vars){
 
 }
-//Função que renderiza um texto plano
-exports.renderText = function(view_name,vars){
-
-}
-
 //Função que recebe um POST e trata o controller/vars corretamente
 exports.methodPost = function (req, res){
 	//var teste = req.client.parser['2'];
@@ -69,37 +58,66 @@ exports.methodPost = function (req, res){
 		//Montagem do Controller/Function
 		controller = default_controller(controller);
 		func = default_controller(func);
-		var call_controller = exports.callController(controller,func,request_vars);
-		console.log(call_controller);
-		res.write(JSON.stringify(call_controller));
+		var calLController = exports.callController(controller,func,request_vars);
+		res.writeHead(200, {'Content-Type': 'text/html'});
+		res.write(calLController);
 		res.end();
 	});
 }
 
 //Função que recebe um GET e trata o controller/vars corretamente
 exports.methodGet = function (req,res){
-	var url = req['url'].replace(/\s\n/g, '').split('/');
-	var controller = url[1];
-	var func = url[2];
-	var params = {};
-	var request_vars = {};
-	//Monta a URL para o controller. Tratando inclusive os parametros
-	if(url[2] != undefined){
-		params = func.split(/[&,?]+/);
-		//Tratamento de URLs para montar um request até o controller
-		params.forEach(function(item_params){
-			if(item_params != func){
-				var objParams = item_params.split("=");
-				request_vars[objParams[0]] = objParams[1];
-			}
-		});
+	console.log(req['url']);
+	if((req['url'].match(/.css/g)) || (req['url'].match(/.js/g))){
+		var tipoImport = "";
+		switch (req['url'].match(/.css/g)) {
+			case true:
+				tipoImport = 'text/css'
+				break;
+			case false:
+				tipoImport = 'application/javascript'
+				break;
+			default:
+				tipoImport = 'text/css'
+		}
+
+		if(fileSys.existsSync(__dirname, "../" + req['url'])){
+			var itemStatic = path.join(__dirname, "../" + req['url']);
+			var arquivoImport = fileSys.readFileSync(itemStatic);
+			res.writeHead(200, {'Content-Type': tipoImport});
+			res.write(arquivoImport);
+		}
+		else{
+			res.writeHead(404, {'Content-Type': tipoImport});
+			res.write("Arquivo não encontrado");
+		}
+		res.end();
 	}
-	//Chamada do Controller passando os parametros
-	controller = default_controller(controller);
-	func = default_controller(func);
-	var call_controller = exports.callController(controller,func,request_vars);
-	res.write(call_controller);
-	res.end()
+	else{
+		var url = req['url'].replace(/\s\n/g, '').split('/');
+		var controller = url[1];
+		var func = url[2];
+		var params = {};
+		var request_vars = {};
+		//Monta a URL para o controller. Tratando inclusive os parametros
+		if(url[2] != undefined){
+			params = func.split(/[&,?]+/);
+			//Tratamento de URLs para montar um request até o controller
+			params.forEach(function(item_params){
+				if(item_params != func){
+					var objParams = item_params.split("=");
+					request_vars[objParams[0]] = objParams[1];
+				}
+			});
+		}
+		//Chamada do Controller passando os parametros
+		controller = default_controller(controller);
+		func = default_controller(func);
+		var call_controller = exports.callController(controller,func,request_vars);
+		res.writeHead(200, {'Content-Type': 'text/html'});
+		res.write(call_controller);
+		res.end()
+	}
 }
 
 //Seta uma func default para o controller (Apenas caso a URL venha vazia)

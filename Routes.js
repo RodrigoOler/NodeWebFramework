@@ -17,6 +17,8 @@ http.createServer(function(req, res){
 					helpers.methodPost(req,res);
 					break;
 				default:
+					helpers.methodGet(req,res);
+					break;
 			}
 		}
 	}catch(error){
