@@ -4,7 +4,7 @@
   "description": "Framework básico e puro, desenhado para dar mais liberdade ao usuario e sem muitas padronizações",
   "main": "index.js",
   "repository": "https://github.com/MatheusSuffi/NodeWebFramework.git",
-  "author": "Matheus Suffi",
+  "author": "Matheus Suffi <matheus_suffi@live.com>",
   "contributors": [
     "Rodrigo Oler <roodrigoprogrammer@gmail.com>"
   ],
