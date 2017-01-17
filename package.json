@@ -1,0 +1,15 @@
+{
+  "name": "NodeWebFramework",
+  "version": "1.0.0",
+  "description": "Framework básico e puro, desenhado para dar mais liberdade ao usuario e sem muitas padronizações",
+  "main": "index.js",
+  "repository": "https://github.com/MatheusSuffi/NodeWebFramework.git",
+  "author": "Matheus Suffi",
+  "contributors": [
+    "Rodrigo Oler <roodrigoprogrammer@gmail.com>"
+  ],
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "license": "GNU"
+}
